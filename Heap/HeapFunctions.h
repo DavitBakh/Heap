@@ -2,6 +2,7 @@
 Write functions makeHeap, popHeap and pushHeap for the tests to pass.
 They must behave the same way the std::make_heap, std::pop_heap and std::push_heap behave.
 */
+#pragma once
 #include <cstddef>
 
 size_t left(size_t index)
@@ -60,4 +61,39 @@ void makeHeap(it begin, it end)
 
 		currInd--;
 	}
+}
+
+template <typename it>
+void popHeap(it begin, it end)
+{
+	size_t size = begin - end;
+	std::swap(*begin , *(end-1));
+
+	size_t maxChildInd;
+	size_t index = 0;
+	const it::value_type& val = *(begin);
+
+	while (true)
+	{
+		size_t leftInd = left(index), rightInd = right(index);
+
+		if (leftInd >= size)
+			break;
+
+		if (rightInd >= size)
+			maxChildInd = leftInd;
+		else
+			maxChildInd = *(begin + leftInd) > *(begin + rightInd) ? leftInd : rightInd;
+
+		if (*(begin + index) < *(begin + maxChildInd))
+			*(begin + index) = *(begin + maxChildInd);
+		else
+			break;
+
+		index = maxChildInd;
+	}
+
+	*(begin + index) = val;
+
+
 }
