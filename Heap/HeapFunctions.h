@@ -56,7 +56,7 @@ void siftDown(ItType begin, ItType end, size_t index, Comparator compare = std::
 		if (rightInd >= size)
 			maxChildInd = leftInd;
 		else
-			maxChildInd = *(begin + leftInd) > *(begin + rightInd) ? leftInd : rightInd;
+			maxChildInd = compare(*(begin + rightInd), *(begin + leftInd)) ? leftInd : rightInd;
 
 		if (compare(*(begin + index), *(begin + maxChildInd)))
 			*(begin + index) = *(begin + maxChildInd);
