@@ -3,7 +3,8 @@ Write functions makeHeap, popHeap and pushHeap for the tests to pass.
 They must behave the same way the std::make_heap, std::pop_heap and std::push_heap behave.
 */
 #pragma once
-#include <cstddef>
+#include <functional>
+#include <algorithm>
 
 size_t left(size_t index)
 {
@@ -20,14 +21,14 @@ size_t parent(size_t index)
 	return (index - 1) / 2;
 }
 
-template <typename it>
-void siftUp(it begin, it end, size_t index)
+template <typename ItType, typename Comparator = std::less<typename ItType::value_type>>
+void siftUp(ItType begin, ItType end, size_t index, Comparator compare = std::less<typename ItType::value_type>{})
 {
-	const it::value_type& val = *(begin + index);
+	const ItType::value_type& val = *(begin + index);
 	while (index > 0)
 	{
 		int parent_index = parent(index);
-		if (*(begin + index) > *(begin + parent_index))
+		if (compare(*(begin + parent_index), *(begin + index)))
 			*(begin + parent_index) = *(begin + index);
 		else
 			break;
@@ -38,12 +39,12 @@ void siftUp(it begin, it end, size_t index)
 	*(begin + index) = val;
 }
 
-template <typename it>
-void siftDown(it begin, it end, size_t index)
+template <typename ItType, typename Comparator = std::less<typename ItType::value_type>>
+void siftDown(ItType begin, ItType end, size_t index, Comparator compare = std::less<typename ItType::value_type>{})
 {
 	size_t size = end - begin;
 	size_t maxChildInd;
-	const it::value_type& val = *(begin + index);
+	const ItType::value_type& val = *(begin + index);
 
 	while (true)
 	{
@@ -57,7 +58,7 @@ void siftDown(it begin, it end, size_t index)
 		else
 			maxChildInd = *(begin + leftInd) > *(begin + rightInd) ? leftInd : rightInd;
 
-		if (*(begin + index) < *(begin + maxChildInd))
+		if (compare(*(begin + index), *(begin + maxChildInd)))
 			*(begin + index) = *(begin + maxChildInd);
 		else
 			break;
@@ -67,8 +68,8 @@ void siftDown(it begin, it end, size_t index)
 	*(begin + index) = val;
 }
 
-template <typename it>
-void makeHeap(it begin, it end)
+template <typename ItType, typename Comparator = std::less<typename ItType::value_type>>
+void makeHeap(ItType begin, ItType end, Comparator compare = std::less<typename ItType::value_type>{})
 {
 	size_t size = end - begin;
 	if (!size)
@@ -78,7 +79,7 @@ void makeHeap(it begin, it end)
 
 	while (true)
 	{
-		siftDown(begin, end, currInd);
+		siftDown(begin, end, currInd, compare);
 
 		if (currInd == 0)
 			break;
@@ -87,15 +88,17 @@ void makeHeap(it begin, it end)
 	}
 }
 
-template <typename it>
-void popHeap(it begin, it end)
+
+template <typename ItType, typename Comparator = std::less<typename ItType::value_type>>
+void popHeap(ItType begin, ItType end, Comparator compare = std::less<typename ItType::value_type>{})
 {
 	std::swap(*begin, *(end - 1));
-	siftDown(begin, end - 1, 0);
+	siftDown(begin, end - 1, 0, compare);
 }
 
-template<typename it>
-void pushHeap(it begin, it end)
+template <typename ItType, typename Comparator = std::less<typename ItType::value_type>>
+void pushHeap(ItType begin, ItType end, Comparator compare = std::less<typename ItType::value_type>{})
 {
-	siftUp(begin, end, (end - begin - 1));
+	siftUp(begin, end, (end - begin - 1), compare);
 }
+

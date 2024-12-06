@@ -5,7 +5,7 @@
 //#include "Tests/4ComparatorTest.h"
 //#include "Tests/5ComparisonCounterTest.h"
 
-int main() 
+int main()
 {
-  std::cout << "All tests passed!";
+	std::cout << "All tests passed!";
 }
