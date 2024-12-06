@@ -21,57 +21,29 @@ size_t parent(size_t index)
 }
 
 template <typename it>
-void makeHeap(it begin, it end)
+void siftUp(it begin, it end, size_t index)
 {
-	size_t size = end - begin;
-	if (!size)
-		return;
-
-	size_t currInd = parent(size - 1);
-
-	while (true)
+	const it::value_type& val = *(begin + index);
+	while (index > 0)
 	{
-		size_t maxChildInd;
-		size_t index = currInd;
-		const it::value_type& val = *(begin + index);
-
-		while (true)
-		{
-			size_t leftInd = left(index), rightInd = right(index);
-
-			if (leftInd >= size)
-				break;
-
-			if (rightInd >= size)
-				maxChildInd = leftInd;
-			else
-				maxChildInd = *(begin + leftInd) > *(begin + rightInd) ? leftInd : rightInd;
-
-			if (*(begin + index) < *(begin + maxChildInd))
-				*(begin + index) = *(begin + maxChildInd);
-			else
-				break;
-
-			index = maxChildInd;
-		}
-		*(begin + index) = val;
-
-		if (currInd == 0)
+		int parent_index = parent(index);
+		if (*(begin + index) > *(begin + parent_index))
+			*(begin + parent_index) = *(begin + index);
+		else
 			break;
 
-		currInd--;
+		index = parent_index;
 	}
+
+	*(begin + index) = val;
 }
 
 template <typename it>
-void popHeap(it begin, it end)
+void siftDown(it begin, it end, size_t index)
 {
-	size_t size = begin - end;
-	std::swap(*begin , *(end-1));
-
+	size_t size = end - begin;
 	size_t maxChildInd;
-	size_t index = 0;
-	const it::value_type& val = *(begin);
+	const it::value_type& val = *(begin + index);
 
 	while (true)
 	{
@@ -92,8 +64,38 @@ void popHeap(it begin, it end)
 
 		index = maxChildInd;
 	}
-
 	*(begin + index) = val;
+}
 
+template <typename it>
+void makeHeap(it begin, it end)
+{
+	size_t size = end - begin;
+	if (!size)
+		return;
 
+	size_t currInd = parent(size - 1);
+
+	while (true)
+	{
+		siftDown(begin, end, currInd);
+
+		if (currInd == 0)
+			break;
+
+		currInd--;
+	}
+}
+
+template <typename it>
+void popHeap(it begin, it end)
+{
+	std::swap(*begin, *(end - 1));
+	siftDown(begin, end - 1, 0);
+}
+
+template<typename it>
+void pushHeap(it begin, it end)
+{
+	siftUp(begin, end, (end - begin - 1));
 }
